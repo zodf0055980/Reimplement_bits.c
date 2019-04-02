@@ -157,14 +157,18 @@ static inline size_t find_next_bit(const unsigned long *bitmap,
 
     t = bitmap[first_long] & BITMAP_FIRST_WORD_MASK(start);
     for (size_t i = first_long + 1; !t && i < l; i++) {
-//        ...待補...
+        long_lower += BITS_PER_LONG;
+        t = bitmap[i];
+//      t ^= ~0UL;
     }
     
     if (!t)
         return bits;
 
     size_t pos;
-//    ...待補...
+    pos = long_lower + bitops_ffs(t) - 1; //bitops_ffs 找到最右邊bit=1 的位置
+    if (pos >= bits)
+        return bits;
     return pos;
 }
 
