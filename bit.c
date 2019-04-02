@@ -40,7 +40,36 @@
  * Return: plus-one index of first set bit; zero when x is zero
  */
 static inline size_t bitops_ffs(unsigned long x) {
-    return __builtin_ffsl(x);
+//    return __builtin_ffsl(x);
+    size_t i = 0;
+    if (x == 0)
+        return 0;
+
+	if (!(0xfffffffful & x)) {
+		i += 32;
+		x >>= 32;
+	}
+	if (!(0xfffful & x)) {
+		i += 16;
+		x >>= 16;
+	}
+	if (!(0xfful & x)) {
+		i += 8;
+		x >>= 8;
+	}
+	if (!(0xful & x)) {
+		i += 4;
+		x >>= 4;
+	}
+	if (!(0x3ul & x)) {
+		i += 2;
+		x >>= 2;
+	}
+	if (!(0x1ul & x)) {
+		i += 1;
+		x >>= 1;
+	}
+    return i+1;
 }
 
 /**
@@ -216,6 +245,8 @@ int main(void) {
 
         bitmap_zero(test, i);
         assert(find_next_bit(test, i, 0) == i);
+        
+        assert(bitops_ffs(i) == __builtin_ffs(i));
     }
     return 0;
 }
